@@ -1,13 +1,14 @@
 import openai
 from time import sleep
 import re
+import os
 
 
 with open('openaiapikey.txt', 'r') as infile:
     openai.api_key = infile.read()
 
 
-def gpt3_completion(prompt, engine='text-davinci-002', temp=1.1, top_p=1.0, tokens=500, freq_pen=0.0, pres_pen=0.0, stop=['asdfasdf']):
+def gpt3_completion(prompt, engine='text-davinci-002', temp=0.5, top_p=1.0, tokens=1000, freq_pen=0.0, pres_pen=0.0, stop=['asdfasdf']):
     max_retry = 5
     retry = 0
     while True:
@@ -23,7 +24,7 @@ def gpt3_completion(prompt, engine='text-davinci-002', temp=1.1, top_p=1.0, toke
                 presence_penalty=pres_pen,
                 stop=stop)
             text = response['choices'][0]['text'].strip()
-            text = re.sub('\s+', ' ', text)
+            #text = re.sub('\s+', ' ', text)
             #save_gpt3_log(prompt, text)
             return text
         except Exception as oops:
@@ -35,12 +36,13 @@ def gpt3_completion(prompt, engine='text-davinci-002', temp=1.1, top_p=1.0, toke
 
 
 if __name__ == '__main__':
-    for i in range(176, 201):
-        with open('prompt_premise.txt', 'r') as infile:
-            prompt = infile.read()
-        premise = gpt3_completion(prompt)
-        print('\n\n\n', premise)
-        filename = "premise_mystery_%s.txt" % i
-        with open('premises/%s' % filename, 'w', encoding='utf-8') as outfile:
-            outfile.write(premise)
+    for filename in os.listdir('premises/'):
+        with open('premises/%s' % filename, 'r', encoding='utf-8') as infile:
+            premise = infile.read()
+        with open('prompt_script.txt', 'r') as infile:
+            prompt = infile.read().replace('<<premise>>', premise)
+        script = gpt3_completion(prompt)
+        new_filename = filename.replace('premise', 'script')
+        with open('scripts/%s' % new_filename, 'w', encoding='utf-8') as outfile:
+            outfile.write(script)
         #exit(0)

@@ -1,0 +1,7 @@
+Write detailed opening scenes for a film with the following premise. Use standard script formats for Hollywood films.
+
+
+PREMISE: <<premise>>
+
+
+SCREENPLAY:
